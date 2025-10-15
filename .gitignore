@@ -1,0 +1,81 @@
+# #########################
+# Go Project Specific
+# #########################
+
+# Compiled executable files
+# 编译后的可执行文件 (在 Windows 上是 .exe)
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+# 测试生成的可执行文件
+*.test
+
+# Go module vendor directory
+# Go modules 的 vendor 目录
+/vendor/
+
+# Go cover files
+# Go 测试覆盖率文件
+*.coverprofile
+*.out
+
+
+# #########################
+# IDE & Editor: Cursor / VSCode
+# #########################
+
+# VSCode / Cursor settings directory
+# 这些文件包含了个性化的工作区设置、启动配置和插件数据，不应共享
+.vscode/
+.cursor-cache/
+
+# Local History for Visual Studio Code
+# 本地历史记录
+.history/
+
+# Built-in live preview extension workspace file
+.code-workspace
+
+
+# #########################
+# Project Specific
+# #########################
+
+# Environment variables
+# 环境变量文件，绝对不能提交到版本库，里面包含密码等敏感信息
+.env
+.env.*
+!.env.example # 但要保留 .env.example 示例文件
+
+# Log files
+# 日志文件
+*.log
+logs/
+*.log.*
+
+
+# #########################
+# OS Generated Files
+# #########################
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+/tmp/
