@@ -1,0 +1,9 @@
+server:
+  port: 8080
+  readTimeout: 15
+
+database:
+  url: root:89757@tcp(127.0.0.1:3306)/qa?charset=utf8mb4&parseTime=True&loc=Local
+
+jwt:
+  secretKey: jackey

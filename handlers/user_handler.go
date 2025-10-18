@@ -1,76 +1,35 @@
 package handlers
 
 import (
-	"errors"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
-	"github.com/mycodeLife01/qa/models"
+	"github.com/mycodeLife01/qa/middleware"
 	"github.com/mycodeLife01/qa/service"
 	"github.com/mycodeLife01/qa/types"
-	"github.com/mycodeLife01/qa/utils"
-	"gorm.io/gorm"
 )
 
-// func TestHandler(c *gin.Context) {
-// 	c.JSON(http.StatusOK, gin.H{"message": "Hello, World!"})
-// }
-
 type UserHandler struct {
-	DB          *gorm.DB
-	AuthService *service.AuthService
+	UserService *service.UserService
 }
 
-func NewUserHandler(db *gorm.DB) *UserHandler {
-	return &UserHandler{DB: db, AuthService: service.NewAuthService(db)}
-}
-
-func (uh *UserHandler) GetUsers(c *gin.Context) {
-	var users []models.User
-	uh.DB.Find(&users)
-	c.JSON(http.StatusOK, users)
+func NewUserHandler(jwtService *service.JwtService, userService *service.UserService) *UserHandler {
+	return &UserHandler{UserService: userService}
 }
 
 func (uh *UserHandler) Register(c *gin.Context) {
 	// 解析请求体
 	var req types.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		_ = c.Error(err)
 		return
 	}
 
-	// 检查用户是否已存在
-	var existingUser models.User
-	err := uh.DB.Where("username=?", req.Username).First(&existingUser).Error
-	if err == nil {
-		c.JSON(http.StatusConflict, gin.H{"error": "username already exists"})
+	//调用UserService
+	registerUser, err := uh.UserService.Register(req.Username, req.Password, req.Email)
+	if err != nil {
+		_ = c.Error(err)
 		return
 	}
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to check username"})
-	}
+	c.Set(middleware.ResponseDataKey, registerUser)
 
-	// 创建用户
-	hashedPassword, hashErr := utils.HashPassword(req.Password)
-	if hashErr != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
-		return
-	}
-	newUser := models.User{
-		Username:       req.Username,
-		PasswordHashed: hashedPassword,
-		Email:          req.Email,
-	}
-	result := uh.DB.Create(&newUser)
-	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create user"})
-		return
-	}
-	c.JSON(http.StatusCreated, gin.H{"message": "user created successfully"})
-
-}
-
-func (uh *UserHandler) SayHello(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "Hello, World!"})
 }
