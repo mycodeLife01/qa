@@ -117,9 +117,9 @@ func (js *JwtService) authorizer() func(c *gin.Context, data any) bool {
 func (js *JwtService) unauthorized() func(c *gin.Context, code int, message string) {
 	return func(c *gin.Context, code int, message string) {
 		c.JSON(code, gin.H{
-			"code":    code,
-			"message": message,
-			"data":    nil,
+			"code": code,
+			"msg":  message,
+			"data": nil,
 		})
 	}
 }
@@ -131,9 +131,9 @@ func (js *JwtService) logoutResponse() func(c *gin.Context) {
 		user, exists := c.Get(identityKey)
 
 		response := gin.H{
-			"code":    http.StatusOK,
-			"message": "Successfully logged out",
-			"data":    gin.H{},
+			"code": http.StatusOK,
+			"msg":  "Successfully logged out",
+			"data": gin.H{},
 		}
 
 		// Show that we can access user information during logout

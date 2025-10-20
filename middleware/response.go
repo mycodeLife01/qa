@@ -38,6 +38,19 @@ func ResponseHandler() gin.HandlerFunc {
 		if c.Writer.Written() {
 			return
 		}
+
+		// 检查是否是 404（路由不存在）
+		if c.Writer.Status() == http.StatusNotFound {
+			c.JSON(http.StatusNotFound, types.Fail("Route not found", http.StatusNotFound))
+			return
+		}
+
+		// 检查是否是 405（方法不允许）
+		if c.Writer.Status() == http.StatusMethodNotAllowed {
+			c.JSON(http.StatusMethodNotAllowed, types.Fail("Method not allowed", http.StatusMethodNotAllowed))
+			return
+		}
+
 		// 正常返回
 		data, exists := c.Get(ResponseDataKey)
 		if exists {

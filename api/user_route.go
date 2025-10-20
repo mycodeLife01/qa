@@ -8,7 +8,8 @@ import (
 
 func SetupPublicUserRoutes(rg *gin.RouterGroup, userHandler *handlers.UserHandler, jwtMiddleware *jwt.GinJWTMiddleware) {
 	rg.POST("/register", userHandler.Register)
-	rg.POST("/login", jwtMiddleware.LoginHandler) // login 不需要 token，放在 public 路由
+	rg.POST("/login", jwtMiddleware.LoginHandler)
+	rg.POST("/refresh", jwtMiddleware.RefreshHandler)
 }
 
 func SetupProtectedUserRoutes(rg *gin.RouterGroup, userHandler *handlers.UserHandler, jwtMiddleware *jwt.GinJWTMiddleware) {

@@ -30,6 +30,10 @@ func main() {
 
 	// 创建Gin Router
 	router := gin.Default()
+
+	// 启用严格的 HTTP 方法检查
+	router.HandleMethodNotAllowed = true
+
 	router.Use(middleware.ResponseHandler())
 	api.SetupRouter(router, db)
 
