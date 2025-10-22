@@ -37,7 +37,7 @@ func LoadConfig() (err error) {
 	// 2. 设置配置文件路径
 	viper.SetConfigName("config") // 配置文件名 (不带后缀)
 	viper.SetConfigType("yaml")   // 配置文件类型
-	viper.AddConfigPath(".")      // 在当前工作目录下查找
+	viper.AddConfigPath("./config")
 
 	// 3. 读取环境变量
 	viper.AutomaticEnv() // 自动读取环境变量

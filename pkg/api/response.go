@@ -1,4 +1,6 @@
-package types
+package api
+
+const ResponseDataKey = "response_data"
 
 // ResponseData 是统一的 API 响应结构体
 type ResponseData struct {

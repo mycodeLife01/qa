@@ -1,4 +1,4 @@
-package types
+package api
 
 type AppError struct {
 	Code    int    // 业务自定义错误码
