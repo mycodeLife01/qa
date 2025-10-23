@@ -1,11 +1,12 @@
-package auth
+package impl
 
 import (
 	"errors"
 
 	"github.com/mycodeLife01/qa/internal/model"
-	"github.com/mycodeLife01/qa/pkg/api"
-	"github.com/mycodeLife01/qa/pkg/security"
+	"github.com/mycodeLife01/qa/internal/pkg/api"
+	"github.com/mycodeLife01/qa/internal/pkg/security"
+	"github.com/mycodeLife01/qa/internal/service"
 	"gorm.io/gorm"
 )
 
@@ -13,7 +14,7 @@ type authService struct {
 	DB *gorm.DB
 }
 
-func NewAuthService(db *gorm.DB) AuthService {
+func NewAuthService(db *gorm.DB) service.AuthService {
 	return &authService{DB: db}
 }
 

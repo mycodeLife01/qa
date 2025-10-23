@@ -7,17 +7,17 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v3"
 	"github.com/gin-gonic/gin"
 	gojwt "github.com/golang-jwt/jwt/v5"
-	"github.com/mycodeLife01/qa/internal/auth"
-	"github.com/mycodeLife01/qa/internal/handler/dto"
+	"github.com/mycodeLife01/qa/internal/dto"
 	"github.com/mycodeLife01/qa/internal/model"
-	"github.com/mycodeLife01/qa/pkg/api"
+	"github.com/mycodeLife01/qa/internal/pkg/api"
+	"github.com/mycodeLife01/qa/internal/service"
 )
 
 // IdentityKey 定义了存储在 gin.Context 中的用户标识的键名
 var identityKey = "username"
 
 // NewAuthMiddleware 创建并配置 gin-jwt 中间件
-func NewAuthMiddleware(authService auth.AuthService) (*jwt.GinJWTMiddleware, error) {
+func NewAuthMiddleware(authService service.AuthService) (*jwt.GinJWTMiddleware, error) {
 
 	// === gin-jwt 配置 ===
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{

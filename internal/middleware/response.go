@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mycodeLife01/qa/pkg/api"
+	"github.com/mycodeLife01/qa/internal/pkg/api"
 )
 
 func ResponseHandler() gin.HandlerFunc {

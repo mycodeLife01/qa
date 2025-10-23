@@ -1,16 +1,17 @@
-package auth
+package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/mycodeLife01/qa/internal/handler/dto"
-	"github.com/mycodeLife01/qa/pkg/api"
+	"github.com/mycodeLife01/qa/internal/dto"
+	"github.com/mycodeLife01/qa/internal/pkg/api"
+	"github.com/mycodeLife01/qa/internal/service"
 )
 
 type AuthHandler struct {
-	AuthService AuthService
+	AuthService service.AuthService
 }
 
-func NewAuthHandler(authService AuthService) *AuthHandler {
+func NewAuthHandler(authService service.AuthService) *AuthHandler {
 	return &AuthHandler{AuthService: authService}
 }
 

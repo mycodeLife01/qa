@@ -1,4 +1,4 @@
-package auth
+package service
 
 import "github.com/mycodeLife01/qa/internal/model"
 
