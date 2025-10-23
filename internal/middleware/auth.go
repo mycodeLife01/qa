@@ -5,8 +5,10 @@ import (
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v3"
+	"github.com/appleboy/gin-jwt/v3/core"
 	"github.com/gin-gonic/gin"
 	gojwt "github.com/golang-jwt/jwt/v5"
+	"github.com/mycodeLife01/qa/config"
 	"github.com/mycodeLife01/qa/internal/dto"
 	"github.com/mycodeLife01/qa/internal/model"
 	"github.com/mycodeLife01/qa/internal/pkg/api"
@@ -21,8 +23,8 @@ func NewAuthMiddleware(authService service.AuthService) (*jwt.GinJWTMiddleware, 
 
 	// === gin-jwt 配置 ===
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
-		Realm:         "my app zone",
-		Key:           []byte("your_secret_key"),
+		Realm:         "Protected Zone",
+		Key:           []byte(config.C.JWT.JWTSecretKey),
 		Timeout:       time.Hour,
 		MaxRefresh:    time.Hour * 24,
 		IdentityKey:   identityKey,
@@ -102,6 +104,14 @@ func NewAuthMiddleware(authService service.AuthService) (*jwt.GinJWTMiddleware, 
 				c.Set(api.ResponseDataKey, logoutInfo)
 			}
 
+		},
+		LoginResponse: func(c *gin.Context, token *core.Token) {
+			response := gin.H{
+				"access_token": token.AccessToken,
+				"token_type":   token.TokenType,
+				"expires_in":   token.ExpiresIn(),
+			}
+			c.Set(api.ResponseDataKey, response)
 		},
 	})
 

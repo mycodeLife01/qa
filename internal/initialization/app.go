@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/mycodeLife01/qa/config"
-	"github.com/mycodeLife01/qa/internal/middleware"
 	"github.com/mycodeLife01/qa/internal/router"
 )
 
@@ -16,6 +15,8 @@ func InitApp() error {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
 
+	fmt.Printf("JWT SECRET: %s\n", config.C.JWT.JWTSecretKey)
+
 	// 2. 初始化数据库
 	db, err := InitDatabase()
 	if err != nil {
@@ -25,19 +26,19 @@ func InitApp() error {
 	// 3. 初始化服务层
 	services := InitServices(db)
 
-	// 4. 初始化处理器
-	handlers := InitHandlers(services)
-
-	// 5. 初始化中间件
-	authMiddleware, err := InitMiddleware(services)
+	// 4. 初始化中间件
+	middlewares, err := InitMiddleware(services)
 	if err != nil {
 		return fmt.Errorf("failed to create auth middleware: %w", err)
 	}
 
+	// 5. 初始化处理器
+	handlers := InitHandlers(services, middlewares.AuthMiddleware)
+
 	// 6. 设置路由
 	r := gin.Default()
-	r.Use(middleware.ResponseHandler())
-	router.SetupAppRouter(r, handlers.AuthHandler, authMiddleware)
+	r.Use(middlewares.ResponseHandler)
+	router.SetupAppRouter(r, handlers.AuthHandler, middlewares.AuthMiddleware)
 
 	// 7. 启动HTTP服务器
 	server := InitHTTPServer(r)
@@ -66,19 +67,19 @@ func InitDependencies() (*Dependencies, error) {
 	// 初始化服务
 	services := InitServices(db)
 
-	// 初始化处理器
-	handlers := InitHandlers(services)
-
 	// 初始化中间件
-	authMiddleware, err := InitMiddleware(services)
+	middlewares, err := InitMiddleware(services)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create auth middleware: %w", err)
 	}
 
+	// 初始化处理器
+	handlers := InitHandlers(services, middlewares.AuthMiddleware)
+
 	return &Dependencies{
-		DB:             db,
-		Services:       services,
-		Handlers:       handlers,
-		AuthMiddleware: authMiddleware,
+		DB:          db,
+		Services:    services,
+		Handlers:    handlers,
+		Middlewares: middlewares,
 	}, nil
 }
