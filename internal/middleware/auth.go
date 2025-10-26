@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v3"
@@ -78,7 +79,27 @@ func NewAuthMiddleware(authService service.AuthService) (*jwt.GinJWTMiddleware, 
 		// payload 是 IdentityHandler 返回的值 (这里是 uint)
 		// 返回 true 表示授权成功
 		Authorizer: func(c *gin.Context, data any) bool {
-			if v, ok := data.(*model.User); ok && v.Username != "" {
+			exist, err := authService.IsExistUser(data.(*model.User).Username)
+			if err != nil {
+				return false
+			}
+			if !exist {
+				return false
+			}
+			role, err := authService.GetUserRoleByName(data.(*model.User).Username)
+			if err != nil {
+				return false
+			}
+			if role != "banned" && role != "" {
+				requestPath := c.Request.URL.Path
+				router := strings.Split(requestPath, "/")[1]
+				if router == "user" {
+					if role == "admin" {
+						return true
+					} else {
+						return false
+					}
+				}
 				return true
 			}
 			return false

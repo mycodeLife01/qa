@@ -9,5 +9,6 @@ import (
 func InitServices(db *gorm.DB) *Services {
 	return &Services{
 		AuthService: impl.NewAuthService(db),
+		UserService: impl.NewUserService(db),
 	}
 }

@@ -6,8 +6,11 @@ import (
 	"github.com/mycodeLife01/qa/internal/handler"
 )
 
-func SetupAppRouter(r *gin.Engine, authHandler *handler.AuthHandler, authMiddleware *jwt.GinJWTMiddleware) {
-	authRouterGroup := r.Group("/auth")
-	SetupAuthRouterGroup(authRouterGroup, authHandler, authMiddleware)
+func SetupAppRouter(r *gin.Engine, authHandler *handler.AuthHandler, userHandler *handler.UserHandler, authMiddleware *jwt.GinJWTMiddleware) {
 
+	authRouterGroup := r.Group("/auth")
+	userRouterGroup := r.Group("/user", authMiddleware.MiddlewareFunc())
+
+	SetupAuthRouterGroup(authRouterGroup, authHandler, authMiddleware)
+	SetupUserRouterGroup(userRouterGroup, userHandler)
 }

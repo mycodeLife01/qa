@@ -9,5 +9,6 @@ import (
 func InitHandlers(services *Services, authMiddleware *jwt.GinJWTMiddleware) *Handlers {
 	return &Handlers{
 		AuthHandler: handler.NewAuthHandler(services.AuthService, authMiddleware),
+		UserHandler: handler.NewUserHandler(services.UserService),
 	}
 }

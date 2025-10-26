@@ -64,3 +64,21 @@ func (as *authService) Register(username, password, email string) (*model.User, 
 		Email:    newUser.Email,
 	}, nil
 }
+
+func (as *authService) GetUserRoleByName(username string) (string, error) {
+	var user model.User
+	err := as.DB.Where("username = ?", username).First(&user).Error
+	if err != nil {
+		return "", err
+	}
+	return user.Role, nil
+}
+
+func (as *authService) IsExistUser(username string) (bool, error) {
+	var user model.User
+	err := as.DB.Where("username = ?", username).First(&user).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}

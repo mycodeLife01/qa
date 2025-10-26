@@ -38,7 +38,7 @@ func InitApp() error {
 	// 6. 设置路由
 	r := gin.Default()
 	r.Use(middlewares.ResponseHandler)
-	router.SetupAppRouter(r, handlers.AuthHandler, middlewares.AuthMiddleware)
+	router.SetupAppRouter(r, handlers.AuthHandler, handlers.UserHandler, middlewares.AuthMiddleware)
 
 	// 7. 启动HTTP服务器
 	server := InitHTTPServer(r)
