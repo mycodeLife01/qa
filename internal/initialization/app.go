@@ -17,6 +17,8 @@ func InitApp() error {
 	}
 
 	fmt.Printf("JWT SECRET: %s\n", config.C.JWT.JWTSecretKey)
+	fmt.Printf("COS SECRET ID: %s\n", config.C.COS.SecretID)
+	fmt.Printf("COS SECRET KEY: %s\n", config.C.COS.SecretKey)
 
 	// 2. 初始化数据库
 	db, err := InitDatabase()

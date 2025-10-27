@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -37,8 +36,6 @@ var C Config
 
 // LoadConfig 从文件和环境变量中加载配置
 func LoadConfig() (err error) {
-	// 1. 设置默认值
-	viper.SetDefault("server.port", 8080)
 
 	// 2. 设置配置文件路径
 	viper.SetConfigName("config") // 配置文件名 (不带后缀)
@@ -46,10 +43,10 @@ func LoadConfig() (err error) {
 	viper.AddConfigPath("./config")
 
 	// 3. 读取环境变量
-	viper.AutomaticEnv() // 自动读取环境变量
-	// 例如，要覆盖数据库密码，可以设置环境变量：DATABASE_PASSWORD=prod_password
-	// Viper 会自动将 . 替换为 _ 来匹配环境变量名
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.BindEnv("cos.secretId", "COS_SECRET_ID")
+	viper.BindEnv("cos.secretKey", "COS_SECRET_KEY")
+	viper.BindEnv("jwt.secretKey", "JWT_SECRET_KEY")
+	viper.BindEnv("database.url", "DATABASE_URL")
 
 	// 4. 读取配置文件
 	err = viper.ReadInConfig()
