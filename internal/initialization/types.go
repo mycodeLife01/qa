@@ -12,12 +12,14 @@ import (
 type Services struct {
 	AuthService service.AuthService
 	UserService service.UserService
+	FileService service.FileService
 }
 
 // Handlers 包含所有HTTP处理器
 type Handlers struct {
 	AuthHandler *handler.AuthHandler
 	UserHandler *handler.UserHandler
+	FileHandler *handler.FileHandler
 }
 
 type Middlewares struct {

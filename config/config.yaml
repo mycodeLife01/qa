@@ -1,6 +1,9 @@
 server:
   port: 9090
 database:
-  url: root:89757@tcp(127.0.0.1:3306)/qa?charset=utf8mb4&parseTime=True&loc=Local
+  url: root:password@tcp(127.0.0.1:3306)/qa?charset=utf8mb4&parseTime=True&loc=Local
 jwt:
-  secretKey: AWxTJ7usd2JmSHyr4vLtM/RTmBRjag66Z+TmDlYJNiw=
+  secretKey: your-jwt-secret-key-here
+cos:
+  secretId: your-tencent-cloud-secret-id
+  secretKey: your-tencent-cloud-secret-key

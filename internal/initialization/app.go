@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/mycodeLife01/qa/config"
+	"github.com/mycodeLife01/qa/internal/pkg/client"
 	"github.com/mycodeLife01/qa/internal/router"
 )
 
@@ -24,7 +25,8 @@ func InitApp() error {
 	}
 
 	// 3. 初始化服务层
-	services := InitServices(db)
+	CosClient := client.InitCosClient()
+	services := InitServices(db, CosClient)
 
 	// 4. 初始化中间件
 	middlewares, err := InitMiddleware(services)
@@ -38,7 +40,7 @@ func InitApp() error {
 	// 6. 设置路由
 	r := gin.Default()
 	r.Use(middlewares.ResponseHandler)
-	router.SetupAppRouter(r, handlers.AuthHandler, handlers.UserHandler, middlewares.AuthMiddleware)
+	router.SetupAppRouter(r, handlers.AuthHandler, handlers.UserHandler, handlers.FileHandler, middlewares.AuthMiddleware)
 
 	// 7. 启动HTTP服务器
 	server := InitHTTPServer(r)
@@ -49,37 +51,4 @@ func InitApp() error {
 	}
 
 	return nil
-}
-
-// InitDependencies 初始化所有依赖（供测试使用）
-func InitDependencies() (*Dependencies, error) {
-	// 初始化配置
-	if err := InitConfig(); err != nil {
-		return nil, fmt.Errorf("failed to load config: %w", err)
-	}
-
-	// 初始化数据库
-	db, err := InitDatabase()
-	if err != nil {
-		return nil, fmt.Errorf("failed to init database: %w", err)
-	}
-
-	// 初始化服务
-	services := InitServices(db)
-
-	// 初始化中间件
-	middlewares, err := InitMiddleware(services)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create auth middleware: %w", err)
-	}
-
-	// 初始化处理器
-	handlers := InitHandlers(services, middlewares.AuthMiddleware)
-
-	return &Dependencies{
-		DB:          db,
-		Services:    services,
-		Handlers:    handlers,
-		Middlewares: middlewares,
-	}, nil
 }

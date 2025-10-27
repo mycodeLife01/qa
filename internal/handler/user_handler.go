@@ -60,6 +60,7 @@ func (uh *UserHandler) AddUser(c *gin.Context) {
 		Username:       userInfo.Username,
 		PasswordHashed: hashed,
 		Email:          userInfo.Email,
+		Role:           userInfo.Role,
 	}
 	newUser, err := uh.UserService.AddUser(user)
 	if err != nil {
