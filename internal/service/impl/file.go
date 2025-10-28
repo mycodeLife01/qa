@@ -62,6 +62,17 @@ func (fs *fileService) Upload(fileHeader *multipart.FileHeader) (bool, error) {
 			fmt.Printf("failed to put file: %v\n", putErr)
 			return false, putErr
 		}
+		// 保存文件记录到数据库
+		uploadFile := model.File{
+			ContentHash: hashString,
+			ObjectKey:   fullname,
+			BucketName:  "my-qa-go-1313494932",
+		}
+		createErr := fs.DB.Create(&uploadFile).Error
+		if createErr != nil {
+			fmt.Printf("failed to create file record: %v\n", createErr)
+			return false, createErr
+		}
 		return true, nil
 
 	} else {
