@@ -2,7 +2,9 @@ package initialization
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/mycodeLife01/qa/config"
 	"github.com/mycodeLife01/qa/internal/pkg/client"
@@ -42,7 +44,19 @@ func InitApp() error {
 	// 6. 设置路由
 	r := gin.Default()
 	r.Use(middlewares.ResponseHandler)
-	router.SetupAppRouter(r, handlers.AuthHandler, handlers.UserHandler, handlers.FileHandler, middlewares.AuthMiddleware)
+
+	corsConfig := cors.Config{
+		// AllowOrigins:     []string{"http://localhost:3000", "https://your-frontend.com"}, // 允许的源
+		AllowOrigins:     []string{"*"}, // 允许所有源，生产环境请务必指定特定源
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept"}, // 允许的请求头
+		ExposeHeaders:    []string{"Content-Length"},                                    // 允许前端访问的响应头
+		AllowCredentials: true,                                                          // 是否允许发送Cookie
+		MaxAge:           12 * time.Hour,                                                // 预检请求（OPTIONS）的缓存时间
+	}
+	r.Use(cors.New(corsConfig))
+
+	router.SetupAppRouter(r, handlers.AuthHandler, handlers.UserHandler, handlers.FileHandler, handlers.AiHandler, middlewares.AuthMiddleware)
 
 	// 7. 启动HTTP服务器
 	server := InitHTTPServer(r)

@@ -1,2 +1,6 @@
 server:
   port: 9090
+
+services:
+  qa_agent_url: "http://localhost:8001"
+  qa_index_worker_url: "http://localhost:8002"

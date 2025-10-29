@@ -19,6 +19,7 @@ func NewAppError(code int, message string, err error) *AppError {
 }
 
 var (
-	ErrUserExists  = NewAppError(1001, "user already exists", nil)
-	ErrUserInvalid = NewAppError(1002, "user invalid", nil)
+	ErrUserExists           = NewAppError(1001, "user already exists", nil)
+	ErrUserInvalid          = NewAppError(1002, "user invalid", nil)
+	ErrUploadFileExtInvalid = NewAppError(1003, "file extension invalid", nil)
 )

@@ -11,5 +11,6 @@ func InitHandlers(services *Services, authMiddleware *jwt.GinJWTMiddleware) *Han
 		AuthHandler: handler.NewAuthHandler(services.AuthService, authMiddleware),
 		UserHandler: handler.NewUserHandler(services.UserService),
 		FileHandler: handler.NewFileHandler(services.FileService),
+		AiHandler:   handler.NewAiHandler(services.AiService),
 	}
 }

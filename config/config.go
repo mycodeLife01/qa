@@ -11,6 +11,7 @@ type Config struct {
 	Database DatabaseConfig
 	JWT      JWTConfig
 	COS      COSConfig
+	Services ServicesConfig
 }
 
 type ServerConfig struct {
@@ -29,6 +30,11 @@ type JWTConfig struct {
 type COSConfig struct {
 	SecretID  string `mapstructure:"secretId"`
 	SecretKey string `mapstructure:"secretKey"`
+}
+
+type ServicesConfig struct {
+	QAAgentURL       string `mapstructure:"qa_agent_url"`
+	QAIndexWorkerURL string `mapstructure:"qa_index_worker_url"`
 }
 
 // C 是一个全局变量，用于在其他包中访问配置

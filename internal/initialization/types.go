@@ -13,6 +13,7 @@ type Services struct {
 	AuthService service.AuthService
 	UserService service.UserService
 	FileService service.FileService
+	AiService   service.AiService
 }
 
 // Handlers 包含所有HTTP处理器
@@ -20,6 +21,7 @@ type Handlers struct {
 	AuthHandler *handler.AuthHandler
 	UserHandler *handler.UserHandler
 	FileHandler *handler.FileHandler
+	AiHandler   *handler.AiHandler
 }
 
 type Middlewares struct {
