@@ -18,10 +18,11 @@ type Services struct {
 
 // Handlers 包含所有HTTP处理器
 type Handlers struct {
-	AuthHandler *handler.AuthHandler
-	UserHandler *handler.UserHandler
-	FileHandler *handler.FileHandler
-	AiHandler   *handler.AiHandler
+	AuthHandler   *handler.AuthHandler
+	UserHandler   *handler.UserHandler
+	FileHandler   *handler.FileHandler
+	AiHandler     *handler.AiHandler
+	HealthHandler *handler.HealthHandler
 }
 
 type Middlewares struct {

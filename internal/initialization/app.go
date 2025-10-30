@@ -7,6 +7,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/mycodeLife01/qa/config"
+	"github.com/mycodeLife01/qa/internal/model"
 	"github.com/mycodeLife01/qa/internal/pkg/client"
 	"github.com/mycodeLife01/qa/internal/router"
 )
@@ -27,6 +28,7 @@ func InitApp() error {
 	if err != nil {
 		return fmt.Errorf("failed to init database: %w", err)
 	}
+	db.AutoMigrate(&model.User{}, &model.File{})
 
 	// 3. 初始化服务层
 	CosClient := client.InitCosClient()
@@ -56,7 +58,7 @@ func InitApp() error {
 	}
 	r.Use(cors.New(corsConfig))
 
-	router.SetupAppRouter(r, handlers.AuthHandler, handlers.UserHandler, handlers.FileHandler, handlers.AiHandler, middlewares.AuthMiddleware)
+	router.SetupAppRouter(r, handlers.AuthHandler, handlers.UserHandler, handlers.FileHandler, handlers.AiHandler, handlers.HealthHandler, middlewares.AuthMiddleware)
 
 	// 7. 启动HTTP服务器
 	server := InitHTTPServer(r)

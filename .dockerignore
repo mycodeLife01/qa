@@ -8,7 +8,7 @@ README.md
 *.md
 
 # 配置文件（保留 config.example.yaml）
-config/config.yaml
+# config/config.yaml
 
 # 编译产物
 qa

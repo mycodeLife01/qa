@@ -38,7 +38,7 @@ WORKDIR /app
 COPY --from=builder /build/qa .
 
 # 复制配置文件示例（可选，如果需要的话）
-COPY --from=builder /build/config/config.example.yaml ./config/
+COPY --from=builder /build/config/config.yaml ./config/
 
 # 更改文件所有者
 RUN chown -R appuser:appuser /app
