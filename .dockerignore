@@ -1,0 +1,51 @@
+# Git 相关
+.git
+.gitignore
+.gitattributes
+
+# 文档
+README.md
+*.md
+
+# 配置文件（保留 config.example.yaml）
+config/config.yaml
+
+# 编译产物
+qa
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# 测试文件
+*_test.go
+*.test
+
+# 输出文件
+*.out
+
+# IDE 相关
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS 相关
+.DS_Store
+Thumbs.db
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 日志文件
+*.log
+
+# 环境变量文件
+.env
+.env.local
+.env.*.local
+

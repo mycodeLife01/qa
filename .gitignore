@@ -81,3 +81,5 @@ Desktop.ini
 /tmp/
 
 qa
+
+config/config.yaml
