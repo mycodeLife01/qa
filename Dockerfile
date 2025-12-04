@@ -4,8 +4,15 @@ FROM golang:1.25.1-alpine AS builder
 # 设置工作目录
 WORKDIR /build
 
+# 更换为清华大学 apk 镜像源以加速下载
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
+
 # 安装必要的构建工具
 RUN apk add --no-cache git gcc musl-dev
+
+# 配置 Go 国内镜像源，加速依赖下载
+ENV GOPROXY=https://goproxy.cn,https://goproxy.io,direct
+ENV GOSUMDB=sum.golang.google.cn
 
 # 复制 go.mod 和 go.sum 文件
 COPY go.mod go.sum ./
@@ -21,6 +28,9 @@ RUN CGO_ENABLED=1 GOOS=linux go build -a -ldflags '-linkmode external -extldflag
 
 # 运行阶段
 FROM alpine:latest
+
+# 更换为清华大学 apk 镜像源以加速下载
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
 
 # 安装 ca-certificates 用于 HTTPS 请求
 RUN apk --no-cache add ca-certificates tzdata
