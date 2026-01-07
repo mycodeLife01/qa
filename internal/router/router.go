@@ -6,10 +6,14 @@ import (
 	"github.com/mycodeLife01/qa/internal/handler"
 )
 
-func SetupAppRouter(r *gin.Engine, authHandler *handler.AuthHandler, userHandler *handler.UserHandler, fileHandler *handler.FileHandler, aiHandler *handler.AiHandler, healthHandler *handler.HealthHandler, authMiddleware *jwt.GinJWTMiddleware) {
+func SetupAppRouter(r *gin.Engine, authHandler *handler.AuthHandler, userHandler *handler.UserHandler, fileHandler *handler.FileHandler, aiHandler *handler.AiHandler, healthHandler *handler.HealthHandler, internalHandler *handler.InternalHandler, authMiddleware *jwt.GinJWTMiddleware) {
 
 	// 健康检查接口（无需认证）
 	r.GET("/health", healthHandler.HealthCheck)
+
+	// 内部接口（无需认证，建议配合防火墙或Internal Token）
+	internalRouterGroup := r.Group("/internal")
+	internalRouterGroup.POST("/file/status", internalHandler.UpdateFileStatus)
 
 	authRouterGroup := r.Group("/auth")
 	userRouterGroup := r.Group("/user", authMiddleware.MiddlewareFunc())

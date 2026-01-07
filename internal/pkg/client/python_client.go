@@ -1,11 +1,13 @@
 package client
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -23,126 +25,24 @@ func NewPythonServiceClient() *PythonServiceClient {
 	}
 }
 
-// CheckRequest 检查文档是否已索引的请求
-type CheckRequest struct {
-	ContentHash string `json:"content_hash"`
-}
-
-// CheckResponse 检查文档的响应
-type CheckResponse struct {
-	ContentHash string  `json:"content_hash"`
-	Exists      bool    `json:"exists"`
-	ChunkCount  *int    `json:"chunk_count,omitempty"`
-	IndexedAt   *string `json:"indexed_at,omitempty"`
-}
-
-// IndexRequest 索引文档的请求
-type IndexRequest struct {
-	JobID       string `json:"job_id"`
-	ContentHash string `json:"content_hash"`
-	FileURL     string `json:"file_url"`
-	FileType    string `json:"file_type"`
-}
-
-// IndexResponse 索引文档的响应
-type IndexResponse struct {
-	JobID      string `json:"job_id"`
-	Status     string `json:"status"` // "success" or "failed"
-	Message    string `json:"message"`
-	ChunkCount *int   `json:"chunk_count,omitempty"`
-}
-
 // AskRequest 问答请求
 type AskRequest struct {
-	Question    string `json:"question"`
-	ContentHash string `json:"content_hash"`
-}
-
-// ContextItem 上下文文档项
-type ContextItem struct {
-	Content  string                 `json:"content"`
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Input          string `json:"input"`
+	DocContentHash string `json:"doc_content_hash"`
+	ThreadID       string `json:"thread_id"`
 }
 
 // AskResponse 问答响应
 type AskResponse struct {
-	Question  string        `json:"question"`
-	Answer    string        `json:"answer"`
-	Context   []ContextItem `json:"context"`
-	Timestamp string        `json:"timestamp"`
+	Answer string `json:"answer"`
 }
 
-// CheckDocument 检查文档是否已索引
-func (c *PythonServiceClient) CheckDocument(workerURL string, contentHash string) (*CheckResponse, error) {
-	reqBody := CheckRequest{
-		ContentHash: contentHash,
-	}
-
-	jsonData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, fmt.Errorf("序列化请求失败: %w", err)
-	}
-
-	url := fmt.Sprintf("%s/check", workerURL)
-	resp, err := c.httpClient.Post(url, "application/json", bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, fmt.Errorf("调用检查接口失败: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("读取响应失败: %w", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("检查接口返回错误状态码 %d: %s", resp.StatusCode, string(body))
-	}
-
-	var checkResp CheckResponse
-	if err := json.Unmarshal(body, &checkResp); err != nil {
-		return nil, fmt.Errorf("解析响应失败: %w", err)
-	}
-
-	return &checkResp, nil
-}
-
-// IndexDocument 索引文档
-func (c *PythonServiceClient) IndexDocument(workerURL string, req *IndexRequest) (*IndexResponse, error) {
-	jsonData, err := json.Marshal(req)
-	if err != nil {
-		return nil, fmt.Errorf("序列化请求失败: %w", err)
-	}
-
-	url := fmt.Sprintf("%s/index", workerURL)
-	resp, err := c.httpClient.Post(url, "application/json", bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, fmt.Errorf("调用索引接口失败: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("读取响应失败: %w", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("索引接口返回错误状态码 %d: %s", resp.StatusCode, string(body))
-	}
-
-	var indexResp IndexResponse
-	if err := json.Unmarshal(body, &indexResp); err != nil {
-		return nil, fmt.Errorf("解析响应失败: %w", err)
-	}
-
-	return &indexResp, nil
-}
-
-// AskQuestion 调用QA Agent回答问题
-func (c *PythonServiceClient) AskQuestion(agentURL string, question string, contentHash string) (*AskResponse, error) {
+// AskQuestionStream 调用QA Agent回答问题（流式）
+func (c *PythonServiceClient) AskQuestionStream(agentURL string, input string, contentHash string, threadID string) (<-chan string, error) {
 	reqBody := AskRequest{
-		Question:    question,
-		ContentHash: contentHash,
+		Input:          input,
+		DocContentHash: contentHash,
+		ThreadID:       threadID,
 	}
 
 	jsonData, err := json.Marshal(reqBody)
@@ -150,26 +50,68 @@ func (c *PythonServiceClient) AskQuestion(agentURL string, question string, cont
 		return nil, fmt.Errorf("序列化请求失败: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/ask", agentURL)
-	resp, err := c.httpClient.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	url := fmt.Sprintf("%s/chat", agentURL)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("创建请求失败: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "text/event-stream")
+
+	// 使用 Do 发送请求
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("调用问答接口失败: %w", err)
 	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("读取响应失败: %w", err)
-	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("问答接口返回错误状态码 %d: %s", resp.StatusCode, string(body))
+		resp.Body.Close()
+		return nil, fmt.Errorf("问答接口返回错误状态码 %d", resp.StatusCode)
 	}
 
-	var askResp AskResponse
-	if err := json.Unmarshal(body, &askResp); err != nil {
-		return nil, fmt.Errorf("解析响应失败: %w", err)
-	}
+	// 创建通道
+	stream := make(chan string)
 
-	return &askResp, nil
+	// 启动协程读取流
+	go func() {
+		defer resp.Body.Close()
+		defer close(stream)
+
+		reader := bufio.NewReader(resp.Body)
+		for {
+			line, err := reader.ReadString('\n')
+			if err != nil {
+				if err != io.EOF {
+					// 可以在这里记录日志
+					fmt.Printf("Error reading stream: %v\n", err)
+				}
+				break
+			}
+
+			// Note: strings.TrimSpace will remove trailing newlines which are critical separators in SSE
+			// But since we are reading line by line with ReadString('\n'), the line ends with \n.
+			// SSE data lines format: "data: <content>\n\n" or just "\n"
+			// The python code yields: f"data: {message.text}\n\n"
+			// So each meaningful line starts with "data: "
+
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+
+			if strings.HasPrefix(line, "data: ") {
+				data := strings.TrimPrefix(line, "data: ")
+
+				// Handle specific python agent error format if present
+				if strings.HasPrefix(data, "[ERROR]:") {
+					fmt.Printf("Agent returned error: %s\n", data)
+					break
+				}
+				stream <- data
+			}
+		}
+	}()
+
+	return stream, nil
 }

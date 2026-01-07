@@ -8,5 +8,7 @@ import (
 func SetupFileRouterGroup(rg *gin.RouterGroup, fileHandler *handler.FileHandler) {
 	{
 		rg.POST("/upload", fileHandler.UploadFile)
+		rg.DELETE("/delete", fileHandler.DeleteFileByHash)
+		rg.GET("/list", fileHandler.GetAllUserFiles)
 	}
 }

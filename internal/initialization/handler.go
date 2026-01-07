@@ -8,10 +8,11 @@ import (
 // InitHandlers 初始化所有处理器
 func InitHandlers(services *Services, authMiddleware *jwt.GinJWTMiddleware) *Handlers {
 	return &Handlers{
-		AuthHandler:   handler.NewAuthHandler(services.AuthService, authMiddleware),
-		UserHandler:   handler.NewUserHandler(services.UserService),
-		FileHandler:   handler.NewFileHandler(services.FileService),
-		AiHandler:     handler.NewAiHandler(services.AiService),
-		HealthHandler: handler.NewHealthHandler(),
+		AuthHandler:     handler.NewAuthHandler(services.AuthService, authMiddleware),
+		UserHandler:     handler.NewUserHandler(services.UserService),
+		FileHandler:     handler.NewFileHandler(services.FileService),
+		AiHandler:       handler.NewAiHandler(services.AiService, services.ThreadService, services.MessageService, services.FileService),
+		HealthHandler:   handler.NewHealthHandler(),
+		InternalHandler: handler.NewInternalHandler(services.FileService),
 	}
 }

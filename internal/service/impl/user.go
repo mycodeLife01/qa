@@ -74,3 +74,15 @@ func (us *userService) DeleteUserById(id uint) (bool, error) {
 	}
 	return true, nil
 }
+
+func (us *userService) GetUserIDByUsername(username string) (uint, error) {
+	var user model.User
+	err := us.DB.Select("id").Where("username = ?", username).First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 0, api.ErrUserInvalid
+		}
+		return 0, err
+	}
+	return user.ID, nil
+}

@@ -1,5 +1,10 @@
 package service
 
 type AiService interface {
-	Ask(question string, fileContentHash string) (string, error)
+	// HTTP
+	Ask(question string, fileContentHash string, threadID string) (<-chan string, error)
+
+	// MQ
+	CreateIndexTask(fileContentHash string) (string, error)
+	GetIndexTaskResult(taskID string) (string, error)
 }
