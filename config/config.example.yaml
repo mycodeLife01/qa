@@ -1,6 +1,9 @@
 server:
   port: 9090
 
+cos:
+  upload_folder: "uploads"  # 正式环境: uploads, 测试环境: uploads-dev
+
 services:
   qa_agent_url: "http://localhost:8001"
   qa_index_worker_url: "http://localhost:8002"

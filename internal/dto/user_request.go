@@ -25,3 +25,7 @@ type UpdateUserRequest struct {
 	Email    *string `json:"email" binding:"omitempty,email"`
 	Role     *string `json:"role" binding:"omitempty,oneof=admin user banned"`
 }
+
+type DeleteFileByHashRequest struct {
+	ContentHash string `form:"content_hash" binding:"required"`
+}

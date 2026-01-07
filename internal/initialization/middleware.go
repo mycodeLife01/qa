@@ -6,7 +6,7 @@ import (
 
 // InitMiddleware 初始化中间件
 func InitMiddleware(services *Services) (*Middlewares, error) {
-	authMiddleware, err := middleware.NewAuthMiddleware(services.AuthService)
+	authMiddleware, err := middleware.NewAuthMiddleware(services.AuthService, services.UserService)
 	if err != nil {
 		return nil, err
 	}

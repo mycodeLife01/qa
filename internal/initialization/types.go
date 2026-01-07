@@ -10,19 +10,22 @@ import (
 
 // Services 包含所有业务服务
 type Services struct {
-	AuthService service.AuthService
-	UserService service.UserService
-	FileService service.FileService
-	AiService   service.AiService
+	AuthService    service.AuthService
+	UserService    service.UserService
+	FileService    service.FileService
+	AiService      service.AiService
+	ThreadService  service.ThreadService
+	MessageService service.MessageService
 }
 
 // Handlers 包含所有HTTP处理器
 type Handlers struct {
-	AuthHandler   *handler.AuthHandler
-	UserHandler   *handler.UserHandler
-	FileHandler   *handler.FileHandler
-	AiHandler     *handler.AiHandler
-	HealthHandler *handler.HealthHandler
+	AuthHandler     *handler.AuthHandler
+	UserHandler     *handler.UserHandler
+	FileHandler     *handler.FileHandler
+	AiHandler       *handler.AiHandler
+	HealthHandler   *handler.HealthHandler
+	InternalHandler *handler.InternalHandler
 }
 
 type Middlewares struct {

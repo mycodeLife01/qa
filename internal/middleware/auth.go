@@ -20,13 +20,13 @@ import (
 var identityKey = "username"
 
 // NewAuthMiddleware 创建并配置 gin-jwt 中间件
-func NewAuthMiddleware(authService service.AuthService) (*jwt.GinJWTMiddleware, error) {
+func NewAuthMiddleware(authService service.AuthService, userService service.UserService) (*jwt.GinJWTMiddleware, error) {
 
 	// === gin-jwt 配置 ===
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:         "Protected Zone",
 		Key:           []byte(config.C.JWT.JWTSecretKey),
-		Timeout:       time.Hour,
+		Timeout:       time.Hour * 72,
 		MaxRefresh:    time.Hour * 24,
 		IdentityKey:   identityKey,
 		TokenLookup:   "header: Authorization, query: token, cookie: jwt",
@@ -51,6 +51,15 @@ func NewAuthMiddleware(authService service.AuthService) (*jwt.GinJWTMiddleware, 
 				log.Printf("identityHandler: failed to extract username from claims")
 				return nil
 			}
+			c.Set("username", username)
+			// 获取并设置 UserID
+			userID, err := userService.GetUserIDByUsername(username)
+			if err != nil {
+				log.Printf("failed to get user id for username %s: %v", username, err)
+			} else {
+				c.Set("userID", userID)
+			}
+
 			return &model.User{
 				Username: username,
 			}

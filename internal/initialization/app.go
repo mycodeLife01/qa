@@ -7,7 +7,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/mycodeLife01/qa/config"
-	"github.com/mycodeLife01/qa/internal/model"
 	"github.com/mycodeLife01/qa/internal/pkg/client"
 	"github.com/mycodeLife01/qa/internal/router"
 )
@@ -22,13 +21,15 @@ func InitApp() error {
 	fmt.Printf("JWT SECRET: %s\n", config.C.JWT.JWTSecretKey)
 	fmt.Printf("COS SECRET ID: %s\n", config.C.COS.SecretID)
 	fmt.Printf("COS SECRET KEY: %s\n", config.C.COS.SecretKey)
+	fmt.Printf("Broker Redis URL: %s\n", config.C.Redis.BrokerURL)
+	fmt.Printf("Result Redis URL: %s\n", config.C.Redis.ResultURL)
+	fmt.Printf("Business Redis URL: %s\n", config.C.Redis.BusinessURL)
 
 	// 2. 初始化数据库
 	db, err := InitDatabase()
 	if err != nil {
 		return fmt.Errorf("failed to init database: %w", err)
 	}
-	db.AutoMigrate(&model.User{}, &model.File{})
 
 	// 3. 初始化服务层
 	CosClient := client.InitCosClient()
@@ -58,7 +59,7 @@ func InitApp() error {
 	}
 	r.Use(cors.New(corsConfig))
 
-	router.SetupAppRouter(r, handlers.AuthHandler, handlers.UserHandler, handlers.FileHandler, handlers.AiHandler, handlers.HealthHandler, middlewares.AuthMiddleware)
+	router.SetupAppRouter(r, handlers.AuthHandler, handlers.UserHandler, handlers.FileHandler, handlers.AiHandler, handlers.HealthHandler, handlers.InternalHandler, middlewares.AuthMiddleware)
 
 	// 7. 启动HTTP服务器
 	server := InitHTTPServer(r)

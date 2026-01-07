@@ -8,4 +8,5 @@ type UserService interface {
 	AddUser(user model.User) (*model.User, error)
 	UpdateUser(user model.User) (*model.User, error)
 	DeleteUserById(id uint) (bool, error)
+	GetUserIDByUsername(username string) (uint, error)
 }

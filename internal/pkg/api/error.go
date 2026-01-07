@@ -22,4 +22,8 @@ var (
 	ErrUserExists           = NewAppError(1001, "user already exists", nil)
 	ErrUserInvalid          = NewAppError(1002, "user invalid", nil)
 	ErrUploadFileExtInvalid = NewAppError(1003, "file extension invalid", nil)
+	ErrFileNotFound         = NewAppError(1004, "file not found", nil)
+	ErrUnauthorized         = NewAppError(1005, "unauthorized", nil)
+	ErrInvalidParams        = NewAppError(1006, "invalid parameters", nil)
+	ErrHandleIndexTask      = NewAppError(2001, "failed to process file indexing in task queue", nil)
 )

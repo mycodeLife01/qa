@@ -18,7 +18,15 @@ func InitDatabase() (*gorm.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
-	migrateErr := db.AutoMigrate(&model.File{})
+
+	// 自动迁移所有模型
+	migrateErr := db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci").AutoMigrate(
+		&model.User{},
+		&model.File{},
+		&model.UserFile{},
+		&model.Thread{},
+		&model.Message{},
+	)
 	if migrateErr != nil {
 		return nil, fmt.Errorf("failed to migrate database: %w", migrateErr)
 	}
